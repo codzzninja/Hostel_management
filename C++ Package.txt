@@ -1,0 +1,1186 @@
+#include<iostream>
+#include<fstream>
+#include<string>
+#include<iomanip>
+#include<stdlib.h>
+#include<stdio.h>
+#include<string.h>
+using namespace std;
+int a,b,c,d,e,f,w,r,flag,count=0,ab,bc,rs,st,count1=0;
+string adminlog,adminpass,adminlog1,adminpass1;
+
+ int adminlogin()
+ {
+        int s=0;
+        while(s==0)
+         {
+            cout<<"\tEnter the login id: ";
+            cin>>adminlog;
+            cout<<"\tEnter the login password: ";
+            cin>>adminpass;
+            system("cls");
+            if(adminlog=="hostel" && adminpass=="1234")
+                {
+                    cout<<"\n\n\t\t\tYou have successfully logined\t\t\t\n\n"<<endl;
+                    s=1;
+                     return 1;
+                }
+            else
+            {
+                 cout<<"\n\n\t\t\tWrong password or username please try again!!!!\t\t\t\n\n";
+            }
+         }
+        return 0;
+}
+class person
+{
+public:
+   char block[10];
+   int roomno;
+   char name[50];
+
+public:
+    void getdata()
+    {
+        cout<<"\tEnter the block(either block1 or block2): ";
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cin.getline(block,10);
+        l3:cout << "\tEnter roomno between 1 to 10 for block1 and 11 to 20 for block2: ";
+        cin>>roomno;
+        system("cls");
+        cin.clear();
+        cin.ignore(1000, '\n');
+        if(roomno<1 || roomno>20)
+        goto l3;
+        cout << "\tEnter name: ";
+        cin.getline(name,50);
+    }
+
+    void putdata()
+    {
+
+        cout<<"\tBlock: "<<block<<endl;
+        cout<<"\tRoom number: "<<roomno<<endl;
+        cout<<"\tName: "<<name<<endl;
+    }
+};
+class mess;
+class bill;
+
+class hostel:public person
+{
+public:
+    char rollno[10];
+    char phone[11];
+    char address[50];
+    char parentname[20];
+    char guardian[20];
+
+public:
+    void add();
+    void display();
+    int retroomno();
+    string retrollno();
+    void update(int y);
+    void displayforbill();
+    friend int checkroom(hostel,bill);
+};
+
+int i = 0, j, k;
+
+void hostel::add() {
+    /*l2:cout<<"\tenter the block(either block1 or block2): ";
+    cin>>block;
+    if(block!="block1" && block!="block2")
+      goto l2;
+    l3:cout << "\tEnter roomno between 1 to 10 for block1 and 11 to 20 for block2: ";
+    cin >> roomno;
+    if(roomno<=1 || roomno>=20)
+      goto l3;
+    cout << "\tEnter name: ";
+    cin >> name;*/
+    person::getdata();
+    cout<<"\tEnter roll number: ";
+    cin.getline(rollno,10);
+    cout<<"\tEnter phone: ";
+    cin.getline(phone,11);
+    cout<<"\tEnter address: ";
+    cin.getline(address,50);
+    cout<<"\tEnter parent name: ";
+    cin.getline(parentname,20);
+    cout<<"\tEnter guardian name: ";
+    cin.getline(guardian,20);
+}
+
+void hostel::display() {
+    cout<<"\n\n\n";
+    person::putdata();
+    cout<<"\tRoll number:"<<rollno<<endl;
+    cout<<"\tPhone number: "<<phone<<endl;
+    cout<<"\tAddress: "<<address<<endl;
+    cout<<"\tParent name: "<<parentname<<endl;
+    cout<<"\tGuardian name: "<<guardian<<endl;
+}
+int hostel::retroomno() {
+    return roomno;
+}
+
+string hostel::retrollno()
+{
+    return rollno;
+}
+
+void hostel::update(int y)
+{
+    roomno=y;
+}
+
+
+void hostel:: displayforbill()
+
+{
+    cout<<"\n\n\n";
+    cout << "\tBlock: " << block << endl;
+    cout << "\tRoomno: " << roomno << endl;
+    cout<<"\tName: "<<name<<endl;
+
+}
+
+hostel h;
+fstream file;
+
+int check()
+{
+    cout << "Enter room no: ";
+    cin >> b;
+    file.open("hosts.bin", ios::binary | ios::in);
+    file.read((char*)&h,sizeof(h));
+    while (!file.eof())
+    {
+        if (h.retroomno() == b)
+        {
+            cout << "Room already booked" << endl;
+            file.close();
+            return 0;
+        }
+        file.read((char*)&h,sizeof(h));
+    }
+    file.close();
+    return 1;
+}
+
+int checks(int j)
+{
+
+    file.open("hosts.bin", ios::binary | ios::in);
+    file.read((char*)&h,sizeof(h));
+    while (!file.eof())
+    {
+        if (h.retroomno() == j)
+        {
+            cout << "Roomno is present" << endl;
+            file.close();
+            return 0;
+        }
+        file.read((char*)&h,sizeof(h));
+    }
+    file.close();
+    return 1;
+
+}
+
+void write()
+{
+        char ch='y';
+        file.open("hosts.bin",ios::app|ios::binary);
+         h.add();
+         file.write((char*)&h,sizeof(h));
+        file.close();
+}
+
+void read()
+{
+    file.open("hosts.bin",ios::in|ios::binary);
+    if(!file)
+    {
+        cout<<"file not found";
+    }
+    else
+    {
+        file.read((char*)&h,sizeof(h));
+        while(!file.eof())
+        {
+            h.display();
+            file.read((char*)&h,sizeof(h));
+
+        }
+    }
+    file.close();
+}
+
+void search()
+{
+    int no,flag=0;
+    file.open("hosts.bin",ios::in|ios::binary);
+    if(!file)
+    {
+        cout<<"file not found";
+    }
+    else
+    {
+        cout<<"Enter room no to search: ";
+        cin>>f;
+        file.read((char*)&h,sizeof(h));
+        while(!file.eof())
+        {
+            if(f==h.retroomno())
+            {
+                flag=1;
+                h.display();
+                break;
+            }
+            file.read((char*)&h,sizeof(h));
+        }
+        if(flag==0)
+        {
+            cout<<"not found";
+        }
+    }
+file.close();
+}
+void modify()
+{
+    l21:cout<<"Enter current room number: ";
+    cin>>r;
+    int fr=checks(r);
+    if(fr==1)
+    {
+       cout<<"Room number does not exist\n";
+       goto l21;
+    }
+
+
+    l1:cout<<"Enter new room number: ";
+    cin>>w;
+    int n=checks(w);
+    if(n==1)
+    {
+    file.open("hosts.bin",ios::in|ios::out|ios::binary);
+    if(!file)
+    {
+        cout<<"file not found";
+    }
+    while(file.read((char*)&h,sizeof(h)))
+          {
+              if(h.retroomno()==r)
+            {
+                h.add();
+                int pos=sizeof(h);
+                file.seekp(-pos,ios::cur);
+                file.write((char*)&h,sizeof(h));
+            }
+          }
+          file.close();
+   }
+  else
+    {
+      goto l1;
+   }
+}
+
+void deletes()
+{
+   int v;
+   cout<<"Enter room number: ";
+   cin>>v;
+   ofstream file2;
+   file2.open("new.bin",ios::out|ios::binary);
+   file.open("hosts.bin",ios::in|ios::binary);
+   if(!file)
+     {
+       cout<<"file not found";
+     }
+  else
+     {
+       file.read((char*)&h,sizeof(h));
+       while(!file.eof())
+          {
+             if(v!=h.retroomno())
+                 {
+                     file2.write((char*)&h,sizeof(h));
+                 }
+              file.read((char*)&h,sizeof(h));
+          }
+      }
+file2.close();
+file.close();
+remove("hosts.bin");
+rename("new.bin","hosts.bin");
+}
+void hosteller()
+{
+    int q=2;
+   while(q==2)
+   {
+    cout<<"\n\t\t\t\t1.ADD STUDENT"<<endl;
+    cout<<"\t\t\t\t2.DISPLAY STUDENT DETAILS"<<endl;
+    cout<<"\t\t\t\t3.modify STUDENT DETAILS"<<endl;
+    cout<<"\t\t\t\t4.search STUDENT DETAILS"<<endl;
+    cout<<"\t\t\t\t5.delete STUDENT DETAILS"<<endl;
+    cout<<"\t\t\t\t6.exit"<<endl;
+
+    try
+    {
+        cout<<"Enter the choice: ";
+        cin>>a;
+        system("cls");
+        if(a<1 || a>6)
+        {
+            throw(a);
+
+        }
+    else
+    {
+
+         switch(a)
+
+          {
+            case 1:
+                  {
+                        int count=0;
+
+                            ifstream inFile("count.txt");
+                            if(inFile)
+                            {
+                                inFile>>count;
+                            }
+                            count++;
+                            ofstream outFile("count.txt");
+                            if(outFile)
+                            {
+                                outFile<<count;
+                                 if(count>1)
+                            {
+                                c=check();
+                                if(c==1)
+                                  {
+                                    write();
+
+                                    break;
+                                  }
+                            }
+                            if(count==1)
+                            {
+                                write();
+                                break;
+                            }
+
+                                outFile.close();
+                            }
+                   }break;
+
+            case 2:{read();break;}
+            case 3:{modify();break;}
+            case 4:{search();break;}
+            case 5:{deletes();break;}
+            case 6:{
+                   cout<<"exit";
+                   q=1;
+                   break;
+                   exit(0);
+                   }
+
+        }
+     }
+   }
+    catch(int a)
+    {
+        cout<<"error: INVALID INPUT.Enter a no between 1 and 6";
+    }
+  }
+
+}
+
+
+/*int checkroom(hostel h,bill obj)
+{
+
+    file.open("host.bin", ios::binary | ios::in);
+    file.read((char*)&h,sizeof(h));
+    while (!file.eof())
+    {
+        if (h.retroomno() == obj.retroom())
+        {
+            cout << "Room is occupied" << endl;
+            h.displayforbill();
+            file.close();
+            return 1;
+        }
+        file.read((char*)&h,sizeof(h));
+    }
+    file.close();
+    cout<<"Room is vacant";
+    return 0;
+}*/
+
+
+
+class mess:public person
+
+
+{
+   public:
+
+
+   static float messfee;
+   int nonvegtoken;
+   int vegtoken;
+   int icecreamtoken;
+   int eggtoken;
+   float  messbill;
+   public:
+
+          void gettokens()
+             {
+
+                 l6:cout<<"enter the no of nonveg tokens taken this month by the student max of 4 tokens: ";
+                 cin>>nonvegtoken;
+                 if(nonvegtoken>4 || nonvegtoken<0)
+                    goto l6;
+                 l7:cout<<"enter the no of veg tokens taken this month by the student max of 4 tokens";
+                 cin>>vegtoken;
+                 if(vegtoken>4 || vegtoken<0)
+                     goto l7;
+                 l8:cout<<"enter the no of icecream tokens taken this month by the student max of 5 tokens: ";
+                 cin>>icecreamtoken;
+                 if(icecreamtoken>5 || icecreamtoken<0)
+                     goto l8;
+                 l9:cout<<"enter the no of egg tokens taken this month by the student max of 5 tokens: ";
+                 cin>>eggtoken;
+                 if(eggtoken>5 || eggtoken<0)
+                      goto l9;
+            }
+
+         void compute()
+             {
+                nonvegtoken=350*nonvegtoken;
+                vegtoken=250*vegtoken;
+                icecreamtoken=30*icecreamtoken;
+                eggtoken=15*eggtoken;
+             }
+
+         float  fullmessbill()
+             {
+                messbill=messfee + nonvegtoken + vegtoken + icecreamtoken + eggtoken;
+                return messbill;
+             }
+
+         friend void billcreate();
+
+
+};
+float mess::messfee=10000;
+
+
+
+class bill:public mess
+{
+   float electricitycharge;
+   float watercharge;
+   float servicecharge;
+   int roomrent;
+   float total;
+   public:
+
+          void assign()
+             {
+                 cout<<"enter the block: ";
+                 cin.clear();
+                 cin.ignore(1000,'\n');
+                 cin.getline(block,10);
+                 cout<<"Enter room number: ";
+                 cin>>roomno;
+                 system("cls");
+                 if(strcmp(block,"block1")==0)
+                 {
+                     roomrent=50000;
+                 }
+                 if(strcmp(block,"block2")==0)
+                 {
+                     roomrent=75000;
+                 }
+                cout<<"Enter the electricity charge: ";
+                cin>>electricitycharge;
+                cout<<"Enter the water bill: ";
+                cin>>watercharge;
+                cout<<"Enter service charge: ";
+                cin>>servicecharge;
+
+                gettokens();
+                compute();
+                k=fullmessbill();
+                messbill=k;
+                total=electricitycharge + watercharge + servicecharge + messbill + roomrent;
+
+            }
+
+         void billgenerator()
+             {
+
+                 cout<<"\t\t\t********* MONTHLY HOSTEL BILL **********"<<endl;
+                 cout<<"\t\t\t\tBLOCK          : "<<block<<endl;
+                 cout<<"\t\t\t\tROOMNO         : "<<roomno<<endl;
+                 cout<<"\t\t\t\tROOMRENT       : "<<roomrent<<endl;
+                 cout<<"\t\t\t\tElectricity    : "<<electricitycharge<<endl;
+                 cout<<"\t\t\t\tWater bill     : "<<watercharge<<endl;
+                 cout<<"\t\t\t\tService charge : "<<servicecharge<<endl;
+                 cout<<"\t\t\t\tMess fee       : "<<messbill<<endl;
+                 cout<<"\t\t\t***************************************"<<endl;
+                 cout<<"\t\t\t\tTOTAL          : "<<total<<endl;
+                 cout<<"\t\t\t***************************************"<<endl;
+
+            }
+         int retroom()
+          {
+
+             return roomno;
+
+          }
+
+            friend int checkroom(hostel,bill);
+            friend void billcreate();
+
+
+};
+
+int checkroom(hostel h,int yr)
+{
+
+    file.open("hosts.bin", ios::binary | ios::in);
+    file.read((char*)&h,sizeof(h));
+    while (!file.eof())
+    {
+        if (h.retroomno() == yr)
+        {
+            cout << "Room is occupied" << endl;
+            h.displayforbill();
+            file.close();
+            return 1;
+        }
+        file.read((char*)&h,sizeof(h));
+    }
+    file.close();
+    cout<<"Room is vacant";
+    return 0;
+}
+bill obj;
+void billcreate()
+{
+    int yr,j;
+    cout<<"Enter the room number: ";
+    cin>>yr;
+    system("cls");
+    j=checkroom(h,yr);
+    if(j==1)
+    {
+
+
+    file.open("bill.bin",ios::app|ios::binary);
+    obj.assign();
+    file.write((char*)&obj,sizeof(obj));
+    }
+    file.close();
+
+
+}
+
+void billdisplay()
+{
+    file.open("bill.bin",ios::in|ios::binary);
+    if(!file)
+    {
+        cout<<"file not found";
+    }
+    else
+    {
+         file.read((char*)&obj,sizeof(obj));
+         while(!file.eof())
+          {
+            obj.billgenerator();
+            file.read((char*)&obj,sizeof(obj));
+          }
+    }
+    file.close();
+}
+
+void billsearch()
+{
+    int no,flag=0;
+    file.open("bill.bin",ios::in|ios::binary);
+    if(!file)
+    {
+        cout<<"file not found";
+    }
+    else
+    {
+        cout<<"Enter room number to search: ";
+        cin>>f;
+        system("cls");
+        file.read((char*)&obj,sizeof(obj));
+        while(!file.eof())
+        {
+            if(f==obj.retroom())
+            {
+                flag=1;
+                obj.billgenerator();
+                break;
+            }
+            file.read((char*)&obj,sizeof(obj));
+        }
+        if(flag==0)
+        {
+            cout<<"not found";
+        }
+    }
+file.close();
+}
+void billchoice()
+
+{
+
+    cout<<"Enter 1 for mess bill generation and 2 for mess bill display and 3 for mess bill search: ";
+    cin>>st;
+    switch(st)
+    {
+        case 1:billcreate();break;
+        case 2:billdisplay();break;
+        case 3:billsearch();break;
+    }
+
+}
+
+
+int adminlogin_worker()
+{
+   int s1=0;
+   while(s1==0)
+    {
+       cout<<"\tEnter the login id: ";
+       cin>>adminlog1;
+       cout<<"\tEnter the login password: ";
+       cin>>adminpass1;
+       system("cls");
+       if(adminlog1=="worker" && adminpass1=="5678")
+        {
+           cout<<"\n\n\t\t\tYou have successfully logined\t\t\t\n\n"<<endl;
+           s1=1;
+           return 1;
+        }
+    }
+}
+
+
+class person1
+{
+public:
+   int empid;
+   char name2[50];
+
+public:
+   void getdata1()
+    {
+       cout<<"\tEnter the id of the employee: ";
+       cin>>empid;
+       cin.clear();
+       cin.ignore(1000,'\n');
+       cout << "\tEnter the name of the employee: ";
+       cin.getline(name2,50);
+       system("cls");
+    }
+
+
+   void putdata1()
+    {
+       cout<<"ID: "<<empid<<endl;
+       cout<<"Name: "<<name2<<endl;
+    }
+};
+
+
+class worker:public person1
+{
+   char post[50];
+   char department[50];
+   int age;
+   char gender;
+   float salary;
+
+public:
+    void add1();
+    void display1();
+    int retempid();
+    string retname();
+    void update1(int y1);
+};
+
+
+void worker::add1()
+  {
+       person1::getdata1();
+       l15:cout<<"\n\tAvailable Departments";
+       cout<<"\n\t 1.Mess department(press department= messdept)";
+       cout<<"\n\t 2.Block maintanence(press department= blockdept)";
+       cout<<"\n\t 3.Office maintanence(press department= officedept)";
+       cout <<"\n\tEnter the department of the employee: ";
+       cin >> department;
+       system("cls");
+       if(strcmp(department,"messdept")==0)
+       {
+           cout<<"\n\n\tAvailable posts under messdept";
+           cout<<"\n\t 1.cooking(press post=cook)";
+           cout<<"\n\t 2.serving(press post=serve)";
+           cout<<"\n\t 3.supervisor(press post=msupervisor)";
+       }
+       else if(strcmp(department,"blockdept")==0)
+       {
+           cout<<"\n\tAvailable posts under blockdept";
+           cout<<"\n\t 1.floor cleaning(press post=fcleaning)";
+           cout<<"\n\t 2.supervisor(press post=bsupervisor)";
+           cout<<"\n\t 3.restroom cleaning(press post=rcleaning)";
+       }
+       else if(strcmp(department,"officedept")==0)
+       {
+            cout<<"\n\n\tAvailable posts under officedept";
+            cout<<"\n\t 1.warden(press post=warden)";
+            cout<<"\n\t 2.block incharges(press post=bincharge)";
+            cout<<"\n\t 3.matron(press post=matron)";
+       }
+       else
+        {
+            cout<<"your entered department is wrong.Enter again";
+            goto l15;
+
+       }
+
+       cout<<"\nEnter the post of the employee: ";
+       cin>>post;
+       system("cls");
+       cout<<"\nEnter the age of the employee: ";
+       cin>>age;
+       system("cls");
+       cout<<"\nEnter the gender of the employee: ";
+       cin>>gender;
+       system("cls");
+       cout<<"record created";
+  }
+
+
+void worker::display1()
+  {
+       cout<<"\n\n\n";
+       person1::putdata1();
+       cout<<"Department: "<<department<<endl;
+       cout<<"Post: "<<post<<endl;
+       cout<<"Age: "<<age<<endl;
+       cout<<"Gender: "<<gender<<endl;
+       if(strcmp(department,"messdept")==0 && strcmp(post,"cook")==0)
+        {
+            cout<<"Salary: 2000"<<endl;
+        }
+       else if(strcmp(department,"messdept")==0 && strcmp(post,"serve")==0)
+        {
+            cout<<"Salary: 8000"<<endl;
+        }
+       else if(strcmp(department,"messdept")==0 && strcmp(post,"msupervisor")==0)
+        {
+            cout<<"Salary: 10500"<<endl;
+        }
+       else if(strcmp(department,"blockdept")==0 && strcmp(post,"fcleaning")==0)
+        {
+            cout<<"Salary: 6000"<<endl;
+        }
+       else if(strcmp(department,"blockdept")==0 && strcmp(post,"bsupervisor")==0)
+        {
+             cout<<"Salary: 12500"<<endl;
+        }
+       else if(strcmp(department,"blockdept")==0 && strcmp(post,"rcleaning")==0)
+        {
+             cout<<"Salary: 2500"<<endl;
+        }
+       else if(strcmp(department,"officedept")==0 && strcmp(post,"warden")==0)
+        {
+             cout<<"Salary: 20000"<<endl;
+        }
+       else if(strcmp(department,"officedept")==0 && strcmp(post,"bincharge")==0)
+        {
+             cout<<"Salary: 12000"<<endl;
+        }
+       else if(strcmp(department,"officedept")==0 && strcmp(post,"matron")==0)
+        {
+             cout<<"Salary: 2000"<<endl;
+        }
+       else
+        {
+             cout<<"Invalid department or post"<<endl;
+
+        }
+  }
+
+
+int worker::retempid()
+  {
+      return empid;
+  }
+
+
+string worker::retname()
+  {
+      return name2;
+  }
+
+
+void worker::update1(int y1)
+  {
+      empid=y1;
+  }
+
+
+fstream file3;
+worker wo;
+
+
+int check1()
+  {
+        cout << "Enter employee ID: ";
+        cin >> b;
+        file3.open("work.bin", ios::binary | ios::in);
+        file3.read((char*)&wo,sizeof(wo));
+        while (!file3.eof())
+          {
+              if (wo.retempid() == b)
+                 {
+                    cout << "ID already exist" << endl;
+                    file3.close();
+                    return 0;
+                 }
+            file3.read((char*)&wo,sizeof(wo));
+          }
+        file3.close();
+        return 1;
+  }
+
+  int check2(int n)
+  {
+        file3.open("work.bin", ios::binary | ios::in);
+        file3.read((char*)&wo,sizeof(wo));
+        while (!file3.eof())
+          {
+              if (wo.retempid() == n)
+                 {
+                    cout << "ID exists" << endl;
+                    file3.close();
+                    return 0;
+                 }
+            file3.read((char*)&wo,sizeof(wo));
+          }
+        file3.close();
+        return 1;
+  }
+
+
+
+void write1()
+  {
+         char ch='y';
+         file3.open("work.bin",ios::app|ios::binary);
+         wo.add1();
+         file3.write((char*)&wo,sizeof(wo));
+         file3.close();
+  }
+
+
+void read1()
+  {
+        file3.open("work.bin",ios::in|ios::binary);
+        if(!file3)
+           {
+               cout<<"file not found";
+           }
+        else
+           {
+               file3.read((char*)&wo,sizeof(wo));
+               while(!file3.eof())
+                   {
+                      wo.display1();
+                      file3.read((char*)&wo,sizeof(wo));
+                   }
+               file3.close();
+           }
+  }
+
+
+void search1()
+  {
+       int no,flag=0;
+       file3.open("work.bin",ios::in|ios::binary);
+       if(!file3)
+          {
+             cout<<"file not found";
+          }
+       else
+          {
+             cout<<"Enter ID to search: ";
+             cin>>f;
+
+             file3.read((char*)&wo,sizeof(wo));
+             while(!file3.eof())
+                 {
+                     if(f==wo.retempid())
+                         {
+                              flag=1;
+                              wo.display1();
+                              break;
+                         }
+                     file3.read((char*)&wo,sizeof(wo));
+                 }
+            if(flag==0)
+                 {
+                     cout<<"not found";
+                 }
+          }
+        file3.close();
+  }
+
+
+string w1;
+
+
+void modify1()
+  {
+      int yu;
+      l18:cout<<"Enter current employee ID: ";
+      cin>>r;
+      int sr=check2(r);
+      if(sr==1)
+      {
+         cout<<"ID does not exist to modify";
+         goto l18;
+      }
+      l1:cout<<"Enter new employee ID: ";
+      cin>>yu;
+      int n=check2(yu);
+      if(n==1)
+        {
+           file3.open("work.bin",ios::in|ios::out|ios::binary);
+           if(!file3)
+              {
+                   cout<<"file not found";
+              }
+           while(file3.read((char*)&wo,sizeof(wo)))
+              {
+
+                 if(wo.retempid()==r)
+                    {
+                        wo.add1();
+                        int pos=sizeof(wo);
+                        file3.seekp(-pos,ios::cur);
+                        file3.write((char*)&wo,sizeof(wo));
+                    }
+              }
+           file3.close();
+        }
+      else
+        {
+           goto l1;
+        }
+  }
+
+
+void deletes1()
+  {
+        int v;
+        cout<<"\nEnter employee ID: ";
+        cin>>v;
+        ofstream file4;
+        file4.open("new1.bin",ios::out|ios::binary);
+        file3.open("work.bin",ios::in|ios::binary);
+        if(!file3)
+           {
+               cout<<"file not found";
+           }
+        else
+           {
+                file3.read((char*)&wo,sizeof(wo));
+                while(!file3.eof())
+                   {
+                        if(v!=wo.retempid())
+                           {
+                                 file4.write((char*)&wo,sizeof(wo));
+                           }
+                        file3.read((char*)&wo,sizeof(wo));
+                   }
+           }
+file4.close();
+file3.close();
+remove("work.bin");
+rename("new1.bin","work.bin");
+}
+
+
+void employee()
+{
+  int q=2;
+   while(q==2)
+    {
+        cout<<"\n\n\t\t\t\t1.ADD WORKER"<<endl;
+        cout<<"\t\t\t\t2.DISPLAY WORKER DETAILS"<<endl;
+        cout<<"\t\t\t\t3.MODIFY WORKER DETAILS"<<endl;
+        cout<<"\t\t\t\t4.SEARCH WORKER DETAILS"<<endl;
+        cout<<"\t\t\t\t5.DELETE WORKER DETAILS"<<endl;
+        cout<<"\t\t\t\t6.EXIT"<<endl;
+
+        try
+         {
+           cout<<"Enter the choice: ";
+           cin>>a;
+           system("cls");
+           if(a<1 || a>6)
+            {
+               throw(a);
+            }
+           else
+            {
+               switch(a)
+                {
+                    case 1:{
+                            int count1=0;
+
+                            ifstream inFile("count1.txt");
+                            if(inFile)
+                            {
+                                inFile>>count1;
+                            }
+                            count1++;
+                            ofstream outFile("count1.txt");
+                            if(outFile)
+                            {
+                                outFile<<count1;
+                                 if(count1>1)
+                            {
+                                c=check1();
+                                if(c==1)
+                                  {
+                                    write1();
+
+                                    break;
+                                  }
+                            }
+                            if(count1==1)
+                            {
+                                write1();
+                                break;
+                            }
+
+                                outFile.close();
+                            }
+
+
+                            /*if(count1>1)
+                            {
+                                c=check1();
+                                if(c==1)
+                                  {
+                                    write1();
+
+                                    break;
+                                  }
+                            }
+                            if(count1==1)
+                            {
+                                write1();
+                                break;
+                            }*/
+                           }
+                    case 2:{read1();break;}
+                    case 3:{modify1();break;}
+                    case 4:{search1();break;}
+                    case 5:{deletes1();break;}
+                    case 6:{
+                             cout<<"exit";
+                             q=1;
+                             break;
+                             exit(0);
+                           }
+                }
+            }
+         }
+      catch(int a)
+        {
+             cout<<"\n\n\t\t\terror: INVALID INPUT.Enter a no between 1 and 6";
+         }
+    }
+}
+
+
+int main()
+{
+    int t, u = 5, h;
+    cout<<"\t\t\t**************************\t\t\t"<<endl;
+    cout<<"\t\t\t*HOSTEL MANAGEMENT SYSTEM*\t\t\t"<<endl;
+    cout<<"\t\t\t**************************\t\t\t"<<endl;
+    cout<<"\t\t\t--------------------------\t\t\t"<<endl;
+    cout<<"\t\t\t\tWELCOME\t\t\t\t"<<endl;
+    cout<<"\n";
+    while (u == 5)
+
+      {
+          cout<<"\t\t\tEnter 1 for login\t\t\t\n";
+          cout<<"\t\t\tEnter 2 for hosteller details\t\t\t\n";
+          cout<<"\t\t\tEnter 3 for bill generation\t\t\t\n";
+          cout<<"\t\t\tEnter 4 for employee details\t\t\t\n";
+          cout<<"\t\t\tEnter 5 for EXIT\t\t\t\n";
+
+        cout << "Enter a choice: ";
+        cin >> t;
+        system("cls");
+        switch (t)
+          {
+            case 1:
+                  h=adminlogin();
+                  break;
+           case 2:{if(h==1)
+                    {
+                      hosteller();
+                    }
+                  else
+                    {
+                       cout<<"\n\n\t\t\tyou have not loginned yet!!!\t\t\t\n\n";
+                    }
+                    break;}
+           case 3:{ if(h==1)
+                      {
+                        billchoice();
+                      }
+                    else
+                    {
+                        cout<<"\n\n\t\t\tyou have not loginned yet!!!!!\t\t\t\n\n";
+                    }
+                    break; }
+           case 4:{ if(h==1)
+                       {
+                       employee();
+                       }
+                       else
+                       {
+                           cout<<"\n\n\t\t\tyou have not loginned yet!!!!\t\t\t\n\n";
+                       }
+                       break; }
+           case 5:
+            cout << "\t\t\tThank you be happy:):):)\t\t\t" << endl;
+            u = 3;
+            break;
+        }
+    }
+    return 0;
+}
